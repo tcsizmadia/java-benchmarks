@@ -55,13 +55,23 @@ public class ConcurrentLinkedQueueBenchmark
             list.add(new Payload(i, "value" + i));
         }
     }
-    @Param({"1000", "5000", "10000", "100000", "500000"})
+    @Param({"1000", "5000", "10000", "50000", "100000", "500000"})
     public int listSize;
 
     @Benchmark
     public void testAddAllWithStream(Blackhole blackhole) {
         queue.clear();
         queue.addAll(list.stream().map(Payload::getId).toList());
+
+        blackhole.consume(queue);
+    }
+
+    @Benchmark
+    public void testAddAllWithFor(Blackhole blackhole) {
+        queue.clear();
+        for (Payload payload : list) {
+            queue.add(payload.getId());
+        }
 
         blackhole.consume(queue);
     }
